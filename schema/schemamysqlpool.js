@@ -12,8 +12,7 @@ var koneksi=mysql.createPool({
     user:"root",
     password:"",
     database:"test_graphql",
-    connectionLimit: 2,
-    // queryTimeout: 20
+    connectionLimit: 5
 })
 
 function query_mysql(query, callback){
@@ -22,7 +21,7 @@ function query_mysql(query, callback){
         koneksi.getConnection(function(error, connection){    
             //run the query
             connection.query(query,  function(err, rows){
-                connection.destroy();
+                connection.destroy(); //Menghentikan koneksi
 
                 if(error){
                     reject(error);
