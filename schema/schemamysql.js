@@ -69,7 +69,7 @@ const BookType = new GraphQLObjectType({
         genre:{type:GraphQLString}, //genre dengan jenis String
         book_name:{type:GraphQLString},
         author_name:{type:GraphQLString},
-        qty:{type:GraphQLInt},
+        jumlah_book:{type:GraphQLInt},
         list_author:{ //untuk relasi ke author
             type:new GraphQLList(AuthorType), //untuk menampilkan author dalam bentuk list
             resolve(parents,args){
@@ -127,6 +127,15 @@ const RootQuery = new GraphQLObjectType({
                 });
             }
         },
+        count_data_book:{
+            type:GraphQLList(BookType),
+            resolve(parents,args){ //untuk mengambil datanya
+                //query:
+                return query_mysql('SELECT data_author.name as author_name, count(data_book.id) as jumlah_book FROM book data_book INNER JOIN author data_author ON data_book.id_author_fk = data_author.id GROUP BY data_book.id_author_fk').then(function(result){
+                    return result;
+                });
+            }
+        },
         get_data_book_pagination:{
             type:GraphQLList(BookType),
             args:{
@@ -180,6 +189,22 @@ const RootQuery = new GraphQLObjectType({
             },
             resolve(parents,args){ //untuk mengambil datanya
                 return bookLoader.load(args.id);
+            }
+        },
+        custom_get_data_book_detail:{
+            type:BookType,
+            args:{
+                id:{type:GraphQLID}
+            },
+            resolve(parents,args){ //untuk mengambil datanya
+                return query_mysql_cud('SELECT * FROM book WHERE id=?',[args.id]).then(function(result){
+                    return {
+                        id : result[0].id,
+                        id_author_fk : result[0].id_author_fk,
+                        name : result[0].name,
+                        genre : "Genre - "+result[0].genre
+                    };
+                });
             }
         },
         author:{
