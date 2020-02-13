@@ -12,7 +12,7 @@ var koneksi=mysql.createPool({
     user:"root",
     password:"",
     database:"test_graphql",
-    connectionLimit: 5
+    connectionLimit: 2
 })
 
 function query_mysql(query, callback){
